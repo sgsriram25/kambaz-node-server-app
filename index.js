@@ -15,6 +15,8 @@ app.use(
  cors({
    credentials: true,
    origin: process.env.CLIENT_URL || "http://localhost:3000",
+   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+   allowedHeaders: ["Content-Type"],
  })
 );
 const sessionOptions = {
@@ -27,7 +29,7 @@ if (process.env.SERVER_ENV !== "development") {
   sessionOptions.cookie = {
     sameSite: "none",
     secure: true,
-    domain: process.env.SERVER_URL,
+    //domain: process.env.SERVER_URL,
   };
 }
 app.use(session(sessionOptions));
