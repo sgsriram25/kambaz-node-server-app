@@ -1,0 +1,39 @@
+{
+  "type": "module",
+  "name": "kambaz-node-server-app",
+  "version": "1.0.0",
+  "description": "Node.js HTTP Web server for the Kambaz application",
+  "main": "index.js",
+  "scripts": {
+    "test": "git repository: https://github.com/sgsriram25/kambaz-node-server-app",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgsriram25/kambaz-node-server-app.git"
+  },
+  "keywords": [
+    "Node",
+    "REST",
+    "Server",
+    "HTTP",
+    "Web",
+    "Development",
+    "CS5610"
+  ],
+  "author": "Sri Ram S",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sgsriram25/kambaz-node-server-app/issues"
+  },
+  "homepage": "https://github.com/sgsriram25/kambaz-node-server-app#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "uuid": "^13.0.0"
+  }
+}
