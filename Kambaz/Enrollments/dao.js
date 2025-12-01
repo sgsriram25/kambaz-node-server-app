@@ -1,32 +1,59 @@
-import { v4 as uuidv4 } from "uuid";
-export default function EnrollmentsDao(db) {
-  function enrollUserInCourse(userId, courseId) {
-    const { enrollments } = db;
-    const exists = enrollments.some(
-      (e) => e.user === userId && e.course === courseId
-    );
-    if (!exists) {
-      enrollments.push({ _id: uuidv4(), user: userId, course: courseId });
+import model from "./model.js";
+
+export default function EnrollmentsDao() {
+
+  const enrollUserInCourse = async (userId, courseId) => {
+
+    const userIdStr = String(userId);
+    const courseIdStr = String(courseId);
+    const enrollment = await model.findOneAndUpdate(
+      { user: userIdStr, course: courseIdStr },
+      { user: userIdStr, course: courseIdStr },
+      { upsert: true, new: true }
+    ).lean();
+    return enrollment;
+  };
+
+ async function findCoursesForUser(userId) {
+   const enrollments = await model.find({ user: userId }).populate("course");
+   return enrollments.map((enrollment) => enrollment.course);
+ }
+ async function findUsersForCourse(courseId) {
+   const enrollments = await model.find({ course: String(courseId) }).populate("user");
+   return enrollments.map((enrollment) => enrollment.user);
+ }
+  const unenrollUserFromCourse = async (userId, courseId) => {
+    const result = await model.deleteOne({ 
+      user: String(userId), 
+      course: String(courseId) 
+    });
+    if (result.deletedCount === 0) {
+      console.warn(`No enrollment found to delete for user ${userId} and course ${courseId}`);
     }
-    return enrollments.find((e) => e.user === userId && e.course === courseId);
-  }
+    return result;
+  };
 
-  function unenrollUserFromCourse(userId, courseId) {
-    const { enrollments } = db;
-    db.enrollments = enrollments.filter(
-      (e) => !(e.user === userId && e.course === courseId)
-    );
-  }
+  const findEnrollmentsForUser = async (userId) => {
+    const enrollments = await model.find({ user: String(userId) }).lean();
+    return enrollments;
+  };
 
-  function findEnrollmentsForUser(userId) {
-    const { enrollments } = db;
-    return enrollments.filter((e) => e.user === userId);
-  }
+  const findEnrollmentsForCourse = async (courseId) => {
+    const enrollments = await model.find({ course: courseId }).lean();
+    return enrollments;
+  };
 
-  function findEnrollmentsForCourse(courseId) {
-    const { enrollments } = db;
-    return enrollments.filter((e) => e.course === courseId);
-  }
+  const unenrollAllFromCourse = async (courseId) => {
+    await model.deleteMany({ course: String(courseId) });
+  };
 
-  return { enrollUserInCourse, unenrollUserFromCourse, findEnrollmentsForUser, findEnrollmentsForCourse };
+  return {
+    enrollUserInCourse,
+    unenrollUserFromCourse,
+    findEnrollmentsForUser,
+    findEnrollmentsForCourse,
+    unenrollAllFromCourse,
+    findCoursesForUser,
+    findUsersForCourse,
+  };
 }
