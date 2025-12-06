@@ -53,7 +53,6 @@ const users = await dao.findAllUsers();
     res.json(usersInCourse);
   };
 
-
    const updateUser = async (req, res) => {
     const { userId } = req.params;
     const userUpdates = req.body;

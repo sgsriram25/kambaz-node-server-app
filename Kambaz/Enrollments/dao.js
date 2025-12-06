@@ -3,7 +3,6 @@ import model from "./model.js";
 export default function EnrollmentsDao() {
 
   const enrollUserInCourse = async (userId, courseId) => {
-
     const userIdStr = String(userId);
     const courseIdStr = String(courseId);
     const enrollment = await model.findOneAndUpdate(
