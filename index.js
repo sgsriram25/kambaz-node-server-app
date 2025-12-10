@@ -8,6 +8,8 @@ import CourseRoutes from "./Kambaz/Courses/routes.js";
 import ModulesRoutes from './Kambaz/Modules/routes.js';
 import AssignmentsRoutes from './Kambaz/Assignments/routes.js';
 import EnrollmentsRoutes from './Kambaz/Enrollments/routes.js';
+import QuizzesRoutes from './Kambaz/Quizzes/routes.js';
+import QuizAttemptsRoutes from './Kambaz/QuizAttempts/routes.js';
 import "dotenv/config";
 import session from "express-session";
 import usersData from "./Kambaz/Database/users.js";
@@ -178,7 +180,6 @@ const seedDatabase = async (req, res) => {
         console.log(`Inserted ${newCount} enrollments despite errors`);
       }
     } else {
-      // If enrollments exist, try to insert missing ones
       try {
         const existingIds = await EnrollmentModel.find().select('_id').lean();
         const existingIdSet = new Set(existingIds.map(e => e._id));
@@ -270,4 +271,6 @@ CourseRoutes(app);
 ModulesRoutes(app);
 AssignmentsRoutes(app);
 EnrollmentsRoutes(app);
+QuizzesRoutes(app);
+QuizAttemptsRoutes(app);
 app.listen(process.env.PORT || 4000)
