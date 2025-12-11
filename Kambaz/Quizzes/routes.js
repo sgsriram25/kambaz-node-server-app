@@ -4,18 +4,18 @@ export default function QuizzesRoutes(app) {
   const dao = QuizzesDao();
 
   // Helper to remove correct answers from quiz questions
-  const stripCorrectAnswers = (quiz, userRole) => {
-    console.log("===== STRIP CORRECT ANSWERS =====");
+  const removeCorrectAnswers = (quiz, userRole) => {
+    console.log("******Removes CORRECT ANSWERS ********");
     console.log("User Role:", userRole);
-    console.log("=================================");
+    console.log("***********");
     
     // Faculty can see everything
     if (userRole === "FACULTY") {
-      console.log("✓ Faculty - returning full quiz with correct answers");
+      console.log(" Faculty - returning full quiz with correct answers");
       return quiz;
     }
 
-    console.log("❌ Student - stripping correct answers");
+    console.log("Student - removing correct answers");
     
     // Students don't get correct answers
     const sanitizedQuiz = { ...quiz };
@@ -52,17 +52,17 @@ export default function QuizzesRoutes(app) {
     const { courseId } = req.params;
     const currentUser = req.session["currentUser"];
     
-    console.log("===== FIND QUIZZES FOR COURSE =====");
+    console.log("******FIND QUIZZES FOR COURSE********");
     console.log("Current User exists:", !!currentUser);
     console.log("Current User Role:", currentUser?.role);
-    console.log("===================================");
+    console.log("**********************************");
     
     try {
       const quizzes = await dao.findQuizzesForCourse(courseId);
       
-      // Strip correct answers for students
+      // remove correct answers for students
       const sanitizedQuizzes = quizzes.map(quiz => 
-        stripCorrectAnswers(quiz, currentUser?.role)
+        removeCorrectAnswers(quiz, currentUser?.role)
       );
       
       res.json(sanitizedQuizzes);
@@ -112,7 +112,7 @@ export default function QuizzesRoutes(app) {
     if (quizUpdates.questions && quizUpdates.questions.length > 0) {
       console.log("First question correctAnswer:", quizUpdates.questions[0].correctAnswer);
     }
-    console.log("=======================");
+    console.log("**********************");
     
     try {
       const quiz = await dao.updateQuiz(quizId, quizUpdates);
@@ -122,7 +122,7 @@ export default function QuizzesRoutes(app) {
       if (quiz.questions && quiz.questions.length > 0) {
         console.log("First question correctAnswer:", quiz.questions[0].correctAnswer);
       }
-      console.log("=============================");
+      console.log("**********************");
       
       res.json(quiz);
     } catch (error) {
@@ -170,7 +170,7 @@ export default function QuizzesRoutes(app) {
           });
         }
       });
-      console.log("=================");
+      console.log("********************");
       
       res.json(quiz);
     } catch (error) {
