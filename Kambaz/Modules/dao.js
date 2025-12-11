@@ -1,44 +1,42 @@
 import { v4 as uuidv4 } from "uuid";
-import model from "../Courses/model.js";
+import model from "./model.js";
+
 export default function ModulesDao() {
-async function createModule(courseId, module) {
-   const newModule = { ...module, _id: uuidv4() };
-   const status = await model.updateOne(
-     { _id: courseId },
-     { $push: { modules: newModule } }
-   );
-return newModule;
-}
+  async function createModule(courseId, module) {
+    const newModule = { ...module, _id: uuidv4(), course: courseId };
+    const created = await model.create(newModule);
+    return created.toObject();
+  }
 
- async function findModulesForCourse(courseId) {
-   const course = await model.findById(courseId);
-   return course?.modules || [];
- }
- async function deleteModule(courseId, moduleId) {
-   const status = await model.updateOne(
-     { _id: courseId },
-     { $pull: { modules: { _id: moduleId } } }
-   );
-   if (status.matchedCount === 0) {
-     throw new Error(`Course with id ${courseId} not found`);
-   }
-   return status;
-}
-async function updateModule(courseId, moduleId, moduleUpdates) {
-   const course = await model.findById(courseId);
-   if (!course) {
-     throw new Error(`Course with id ${courseId} not found`);
-   }
-   const module = course.modules.id(moduleId);
-   if (!module) {
-     throw new Error(`Module with id ${moduleId} not found`);
-   }
-   Object.assign(module, moduleUpdates);
-   await course.save();
-   return module;
-}
+  async function findModulesForCourse(courseId) {
+    const modules = await model.find({ course: courseId }).lean();
+    return modules;
+  }
 
- return {
-   findModulesForCourse,createModule, deleteModule, updateModule
- };
+  async function deleteModule(courseId, moduleId) {
+    const result = await model.deleteOne({ _id: moduleId, course: courseId });
+    if (result.deletedCount === 0) {
+      throw new Error(`Module with id ${moduleId} not found`);
+    }
+    return result;
+  }
+
+  async function updateModule(courseId, moduleId, moduleUpdates) {
+    const updated = await model.findByIdAndUpdate(
+      moduleId,
+      { $set: moduleUpdates },
+      { new: true }
+    ).lean();
+    if (!updated) {
+      throw new Error(`Module with id ${moduleId} not found`);
+    }
+    return updated;
+  }
+
+  return {
+    findModulesForCourse,
+    createModule,
+    deleteModule,
+    updateModule
+  };
 }
